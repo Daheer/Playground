@@ -6,6 +6,7 @@ warnings.filterwarnings('ignore')
 class Grid:
     def __init__(self):
         self.grid = np.zeros((10, 10)).astype(int)
+        self.solved_path = []
     def visualize(self):
         print(self.grid)
     def place_items(self, obstacles, player, goal):
@@ -29,15 +30,15 @@ class Grid:
         cur_pos = player
         directions = ['up', 'left', 'right', 'down', 'up_left', 'up_right', 'down_right', 'down_left']
         best_dist = 100
-        best_penalty = 10
         best_direction = ''
         for direction in directions:
             movement = player.move(direction)
             dist = distance(movement, [9, 9])
-            if dist < best_dist and self.grid[movement[0], movement[1]] != -1 and dist > 0:
+            if dist < best_dist and self.grid[movement[0], movement[1]] != -1:
                 best_dist = dist
                 best_direction = direction
         player.move(best_direction, act = True)
+        self.solved_path.append(player.move(best_direction))
         self.grid[cur_pos.x, cur_pos.y] = 0
         self.grid[player.x, player.y] = 1
     def add_obstacles(self, n_obstacles):
@@ -90,15 +91,15 @@ def distance(a, b):
 
 grid = Grid()
 player = Player()
+goal = [9, 9]
 
 grid.place_items(obstacles = [[9, 7], [8, 7], [6, 7], [6, 8]], player = player, goal = [9, 9])
 
 grid.add_obstacles(20)
 
-for i in range(100):
+while (player.x != goal[0] and player.y != goal[1]):
     grid.update(player)
 
 grid.visualize()
 
-
-
+print(grid.solved_path)
